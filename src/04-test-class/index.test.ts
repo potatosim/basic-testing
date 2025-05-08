@@ -1,5 +1,6 @@
 // Uncomment the code below and write your tests
 
+import _ from 'lodash';
 import {
   InsufficientFundsError,
   SynchronizationFailedError,
@@ -85,16 +86,18 @@ describe('BankAccount', () => {
   });
 
   test('fetchBalance should return number in case if request did not failed', async () => {
-    const initialBalance = 1000;
-    const bankAccount = getBankAccount(initialBalance);
-    const mockedValue = 200;
+    const bankAccount = getBankAccount(1000);
 
-    const spy = jest.spyOn(bankAccount, 'fetchBalance');
-    spy.mockResolvedValue(mockedValue);
+    const spy = jest
+      .spyOn(_, 'random')
+      // Random balance
+      .mockReturnValueOnce(100)
+      // Request not failed
+      .mockReturnValueOnce(1);
 
-    await expect(bankAccount.synchronizeBalance()).resolves.not.toThrow(
-      SynchronizationFailedError,
-    );
+    const balance = await bankAccount.fetchBalance();
+
+    expect(balance).toBe(100);
 
     spy.mockReset();
     spy.mockRestore();
